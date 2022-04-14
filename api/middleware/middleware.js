@@ -1,3 +1,4 @@
+const Users = require('../users/users-model')
 function logger(req, res, next) {
   // DO YOUR MAGIC
   const requestUrl = req.originalUrl
@@ -7,10 +8,14 @@ function logger(req, res, next) {
   next()
 }
 
-function validateUserId(req, res, next) {
+async function validateUserId(req, res, next) {
   // DO YOUR MAGIC
-  console.log('validateUserId')
-  next()
+  const checkId = await Users.getById(req.params.id)
+  if(!checkId){
+    next({status: 404, message: "user not found"})
+  }else{
+    next()
+  }
 }
 
 function validateUser(req, res, next) {

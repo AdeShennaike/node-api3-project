@@ -19,9 +19,16 @@ router.get('/', logger, async (req, res, next) => {
   }
 });
 
-router.get('/:id', logger, (req, res, next) => {
+router.get('/:id', logger, validateUserId, (req, res, next) => {
   // RETURN THE USER OBJECT
   // this needs a middleware to verify user id
+  Users.getById(req.params.id)
+    .then( user => {
+      res.status(200).json(user)
+    })
+    .catch(err => {
+      next(err)
+    })
 });
 
 router.post('/', logger, (req, res, next) => {
@@ -53,7 +60,7 @@ router.post('/:id/posts', logger, (req, res, next) => {
 
 router.use((err, req, res, next) => {// eslint-disable-line
   res.status(err.status || 500).json({
-    message: err.error || "whoops! something went wrong",
+    message: err.message || "whoops! something went wrong",
     stack: err.stack
   })
 });
