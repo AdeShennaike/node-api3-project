@@ -42,15 +42,28 @@ router.post('/', logger, validateUser, async (req, res, next) => {
   }
 });
 
-router.put('/:id', logger, validateUser, validateUserId, (req, res, next) => {
+router.put('/:id', logger, validateUser, validateUserId, async (req, res, next) => {
   // RETURN THE FRESHLY UPDATED USER OBJECT
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
+  const updateUser = await Users.update(req.params.id, req.body)
+  try{
+    res.status(200).json(updateUser)
+  }catch(err){
+    next(err)
+  }
 });
 
 router.delete('/:id', logger, validateUserId, (req, res, next) => {
   // RETURN THE FRESHLY DELETED USER OBJECT
   // this needs a middleware to verify user id
+  Users.remove(req.params.id)
+    .then(user => {
+      res.status(200).json(user)
+    })
+    .catch(err => {
+      next(err)
+    })
 });
 
 router.get('/:id/posts', logger, validateUserId, (req, res, next) => {
